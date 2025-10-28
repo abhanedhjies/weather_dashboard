@@ -15,13 +15,13 @@ app.get('/api/weather', async (req, res) => {
   if (!city) return res.status(400).send({ error: "City required" });
 
   try {
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
     const response = await axios.get(url);
     res.json(response.data);
   } catch (err) {
+    console.error(err.message);
     res.status(500).send({ error: "Failed to fetch weather" });
   }
 });
 
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
-
+app.listen(PORT, () => console.log(`✅ Backend running on port ${PORT}`));

@@ -1,43 +1,55 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./styles.css";
+import React, { useState } from 'react'
+import axios from 'axios'
+import './styles.css'
 
-export default function App() {
-  const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
+function App() {
+  const [city, setCity] = useState('')
+  const [weather, setWeather] = useState(null)
+  const [error, setError] = useState('')
 
-  const getWeather = async () => {
+  const fetchWeather = async () => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/weather?city=${city}`);
-      setWeather(res.data);
+      setError('')
+      const response = await axios.get(`http://localhost:4000/api/weather?city=${city}`)
+      setWeather(response.data)
     } catch (err) {
-      alert("City not found");
+      setWeather(null)
+      setError('City not found or server error.')
     }
-  };
+  }
 
   return (
     <div className="container">
-      <h1>Weather Dashboard</h1>
-      <input
-        type="text"
-        placeholder="Enter city"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-      />
-      <button onClick={getWeather}>Get Weather</button>
+      <h1>🌦️ Weather Dashboard</h1>
+      <div className="input-section">
+        <input
+          type="text"
+          placeholder="Enter city name"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button onClick={fetchWeather}>Get Weather</button>
+      </div>
+
+      {error && <p className="error">{error}</p>}
 
       {weather && (
-        <div className="weather-card">
-          <h2>{weather.name}</h2>
-          <p>Temperature: {weather.main.temp} °C</p>
-          <p>Humidity: {weather.main.humidity}%</p>
-          <p>Condition: {weather.weather[0].description}</p>
-          <img
-            src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-            alt="icon"
-          />
-        </div>
-      )}
+  <div className="weather-card">
+    <h2>{weather.name}</h2>
+    <img
+      src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+      alt="icon"
+      className="weather-icon"
+    />
+    <p>{weather.weather[0].description}</p>
+    <p>🌡️ {Math.round(weather.main.temp - 273.15)}°C</p>
+    <p>💨 Wind: {weather.wind.speed} m/s</p>
+    <p>💧 Humidity: {weather.main.humidity}%</p>
+  </div>
+)}
+
     </div>
-  );
+  )
 }
+
+export default App
