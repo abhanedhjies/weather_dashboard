@@ -13,21 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔐 Log in to GitHub Container Registry (GHCR)
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: abhanedhjies                    # 👈 manually added username
-          password: ${{ secrets.GHCR_TOKEN }}       # 👈 GitHub token from repository secrets
+          username: "abhanedhjies"                # 👈 your GitHub username in quotes
+          password: ${{ secrets.GHCR_TOKEN }}     # 👈 your secret from repository settings
 
-      # 🏗️ Build & Push Frontend
       - name: Build and Push Frontend
         run: |
           docker build -t ghcr.io/abhanedhjies/weather-frontend:latest ./frontend
           docker push ghcr.io/abhanedhjies/weather-frontend:latest
 
-      # 🏗️ Build & Push Backend
       - name: Build and Push Backend
         run: |
           docker build -t ghcr.io/abhanedhjies/weather-backend:latest ./backend
