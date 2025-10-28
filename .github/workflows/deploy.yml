@@ -13,13 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔐 Authenticate to GitHub Container Registry (GHCR)
+      # 🔐 Log in to GitHub Container Registry (GHCR)
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: ${{ github.actor }}           # 👈 your GitHub username is used automatically
+          password: ${{ secrets.GHCR_TOKEN }}     # 👈 your token stored as a secret
 
       # 🏗️ Build & Push Frontend
       - name: Build and Push Frontend
