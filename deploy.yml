@@ -1,5 +1,17 @@
-- name: Deploy weather dashboard
+---
+- name: Deploy Weather Dashboard
   hosts: localhost
+  connection: local
   tasks:
-    - name: Rebuild Docker containers
-      command: docker compose up --build -d
+    - name: Run Terraform Init
+      command: terraform init
+      args:
+        chdir: ./terraform
+
+    - name: Apply Terraform configuration
+      command: terraform apply -auto-approve
+      args:
+        chdir: ./terraform
+
+    - name: Verify running containers
+      command: docker ps

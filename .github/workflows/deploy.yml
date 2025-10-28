@@ -1,0 +1,64 @@
+name: CI/CD Pipeline - Weather Dashboard
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write  # Needed for pushing to GHCR
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # ===============================
+      # FRONTEND BUILD + PUSH
+      # ===============================
+      - name: Build Frontend Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.actor }}/weather-frontend:latest ./frontend
+
+      - name: Push Frontend image to GHCR
+        run: |
+          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.actor }}/weather-frontend:latest
+
+      # ===============================
+      # BACKEND BUILD + PUSH
+      # ===============================
+      - name: Build Backend Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.actor }}/weather-backend:latest ./backend
+
+      - name: Push Backend image to GHCR
+        run: |
+          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.actor }}/weather-backend:latest
+
+      # ===============================
+      # DEPLOY USING TERRAFORM
+      # ===============================
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
