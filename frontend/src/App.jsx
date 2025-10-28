@@ -10,7 +10,9 @@ function App() {
   const fetchWeather = async () => {
     try {
       setError('')
-      const response = await axios.get(`http://localhost:4000/api/weather?city=${city}`)
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000';
+      const response = await axios.get(`${API_BASE_URL}/api/weather?city=${city}`);
+
       setWeather(response.data)
     } catch (err) {
       setWeather(null)
