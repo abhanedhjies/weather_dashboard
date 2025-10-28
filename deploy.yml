@@ -1,0 +1,5 @@
+- name: Deploy weather dashboard
+  hosts: localhost
+  tasks:
+    - name: Rebuild Docker containers
+      command: docker compose up --build -d
